@@ -12,7 +12,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
   var exports = window.Shiny = window.Shiny || {};
 
-  exports.version = "1.3.2.9000"; // Version number inserted by Grunt
+  exports.version = "1.3.2.9001"; // Version number inserted by Grunt
 
   var origPushState = window.history.pushState;
   window.history.pushState = function () {
@@ -4939,6 +4939,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           var curValue = $(el).bsDatepicker('getUTCDate');
           $(el).bsDatepicker('setStartDate', date);
           $(el).bsDatepicker('setUTCDate', curValue);
+          // Workaround for https://github.com/rstudio/shiny/issues/2335
+          // We only set the start date *after* the value in this special
+          // case so we don't effect the intended behavior of having a blank
+          // value when it falls outside the start date
+          if (date.toDateString() === curValue.toDateString()) {
+            $(el).bsDatepicker('setStartDate', null);
+            $(el).bsDatepicker('setUTCDate', curValue);
+            $(el).bsDatepicker('setStartDate', date);
+          }
         }
       }
     },
@@ -4956,6 +4965,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           var curValue = $(el).bsDatepicker('getUTCDate');
           $(el).bsDatepicker('setEndDate', date);
           $(el).bsDatepicker('setUTCDate', curValue);
+          // Workaround for same issue as in _setMin.
+          if (date.toDateString() === curValue.toDateString()) {
+            $(el).bsDatepicker('setEndDate', null);
+            $(el).bsDatepicker('setUTCDate', curValue);
+            $(el).bsDatepicker('setEndDate', date);
+          }
         }
       }
     },
