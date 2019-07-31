@@ -110,7 +110,7 @@ renderPlot <- function(expr, width='auto', height='auto', res=72, ...,
             height = dims$height,
             pixelratio = pixelratio,
             res = res
-          ), args))
+          ), args), envir = new.env())
       },
       catch = function(reason) {
         # Non-isolating read. A common reason for errors in plotting is because
