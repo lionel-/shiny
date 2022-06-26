@@ -1508,7 +1508,7 @@ hybrid_chain <- function(expr, ..., catch = NULL, finally = NULL,
   do <- function() {
     runFinally <- TRUE
     tryCatch(
-      {
+      withCallingHandlers({
         captureStackTraces({
           result <- withVisible(force(expr))
           if (promises::is.promising(result$value)) {
@@ -1535,11 +1535,10 @@ hybrid_chain <- function(expr, ..., catch = NULL, finally = NULL,
         })
       },
       error = function(e) {
-        if (!is.null(catch))
+        if (!is.null(catch)) {
           catch(e)
-        else
-          stop(e)
-      },
+        }
+      }),
       finally = if (runFinally && !is.null(finally)) finally()
     )
   }
